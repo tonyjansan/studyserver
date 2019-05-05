@@ -38,14 +38,17 @@ router.post('/single.play', upload.single('ppt'), function(req, res, next) {
     const pdfPath = path.join(file.destination, pdfName);
     if (fs.existsSync(pdfPath)) {
       res.render('play', { title: pdfName });
-      return;
-    }
-    if (!fs.existsSync(pptPath)) {
-      fs.renameSync(file.path, pptPath);
-    } else {
       fs.unlink(file.path, e => {
         console.log(e);
       });
+      return;
+    }
+    if (fs.existsSync(pptPath)) {
+      fs.unlink(file.path, e => {
+        console.log(e);
+      });
+    } else {
+      fs.renameSync(file.path, pptPath);
     }
     process.exec(soffice + path.join('.', pptPath), (error, stdout, stderr) => {
       res.render('play', { title: pdfName });
