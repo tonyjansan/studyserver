@@ -16,6 +16,7 @@ $(function () {
         pageNumPending = null;
     var pdfH = $winH - 54 * 2; //减去上下留白高度
     var pdfW = parseInt(pdfH * 16 / 9); //按16：9比例计算
+    var screenfull = undefined;
 
     /*初始化显示*/
     $('.spinner').show();
@@ -43,12 +44,43 @@ $(function () {
         }
     });
 
-    //全屏
+    // 全屏
+    window.onload = function() {
+        var hookApis = [
+            [ "requestFullscreen", "exitFullscreen", "fullscreenchange", "fullscreen", "fullscreenElement" ],
+            [ "webkitRequestFullScreen", "webkitCancelFullScreen", "webkitfullscreenchange", "webkitIsFullScreen", "webkitCurrentFullScreenElement" ],
+            [ "mozRequestFullScreen", "mozCancelFullScreen", "mozfullscreenchange", "mozFullScreen", "mozFullScreenElement" ]
+        ];
+        return screenfull = {
+            init: function () {
+                console.log(document);
+                for (var index = 0; index < hookApis.length; index++) {
+                    hookApi = hookApis[index];
+                    if (hookApi[0] in document.documentElement && hookApi[1] in document) {
+                        this.api = hookApi;
+                        break;
+                    }
+                }
+                console.log(this.api);
+                return this.api ? this : undefined;
+            },
+            request: function () {
+                document.documentElement && (document[this.api[3]] || document.documentElement[this.api[0]]());
+            },
+            exit: function () {
+                document[this.api[1]]();
+            },
+            toggle: function () {
+                document[this.api[3]] ? this.exit() : this.request();
+            },
+            onchange: function () {}
+        }.init();
+    };
+
     $fullscreen.on('click', function () {
         var _this = $(this);
-        if (_this.hasClass('isFull')) {
-            _this.removeClass("isFull icon-quanping").addClass('icon-fullscreen-exit').parent().attr('data-tooltips', '退出全屏');
-            screenfull && screenfull.request();
+        if (_this.hasClass('icon-fullscreen-exit')) {
+            screenfull && screenfull.exit();
             $pdfCon.css({
                 'left': '50%',
                 'top': '50%',
@@ -59,22 +91,28 @@ $(function () {
                 'transform': 'translate(-50%,-50%)'
             });
         } else {
-            screenfull && screenfull.exit();
+            screenfull && screenfull.request();
         }
     });
 
     // 退出全屏
     window.onresize = function () {
-        if (!checkFull()) {
-            $fullscreen.removeClass("icon-fullscreen-exit").addClass('isFull icon-quanping').parent().attr('data-tooltips', '全屏浏览');
+        var isFull = checkFull();
+        console.log('isFull: ' + isFull);
+        if (isFull) {
+            if ($fullscreen.hasClass('icon-quanping')) {
+                $fullscreen.removeClass('icon-quanping').addClass('icon-fullscreen-exit').parent().attr('data-tooltips', '退出全屏');
+            }
+        } else {
+            if ($fullscreen.hasClass('icon-fullscreen-exit')) {
+                $fullscreen.removeClass('icon-fullscreen-exit').addClass('icon-quanping').parent().attr('data-tooltips', '全屏浏览');
+            }
         }
     };
 
     // 判断是否为全屏
     function checkFull() {
-        var isFull = document.fullscreenEnabled || window.fullScreen || document.webkitIsFullScreen || document.msFullscreenEnabled;
-        if (isFull === undefined) isFull = false;
-        return isFull;
+        return window.fullScreen || document.fullscreen || document.webkitIsFullScreen || document.mozFullScreen;
     }
 
     /**
@@ -182,44 +220,3 @@ function generateMixed(n) {
     }
     return res;
 }
-
-//全屏
-(function (a, b) {
-    "use strict";
-    var c = function () {
-        var a = [
-            ["requestFullscreen", "exitFullscreen", "fullscreenchange", "fullscreen", "fullscreenElement"],
-            ["webkitRequestFullScreen", "webkitCancelFullScreen", "webkitfullscreenchange", "webkitIsFullScreen", "webkitCurrentFullScreenElement"],
-            ["mozRequestFullScreen", "mozCancelFullScreen", "mozfullscreenchange", "mozFullScreen", "mozFullScreenElement"]
-        ];
-        for (var c = 0, d = a.length; c < d; c++) {
-            var e = a[c];
-            if (e[1] in b) return e;
-        }
-    }();
-    if (!c) return a.screenfull = !1;
-    var d = "ALLOW_KEYBOARD_INPUT" in Element,
-        e = {
-            init: function () {
-                return b.addEventListener(c[2],
-                    function (a) {
-                        e.isFullscreen = b[c[3]], e.element = b[c[4]], e.onchange(a);
-                    }
-                ), this;
-            },
-            isFullscreen: b[c[3]],
-            element: b[c[4]],
-            request: function (a) {
-                a = a || b.documentElement, a[c[0]](d && Element.ALLOW_KEYBOARD_INPUT), b.isFullscreen || a[c[0]]();
-            },
-            exit: function () {
-                console.log(c[1]);
-                b[c[1]]();
-            },
-            toggle: function (a) {
-                this.isFullscreen ? this.exit() : this.request(a)
-            },
-            onchange: function () { }
-        };
-    a.screenfull = e.init()
-})(window, document);
