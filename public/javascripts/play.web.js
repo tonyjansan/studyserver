@@ -4,10 +4,10 @@ $(function () {
     var $pdfCon = $('#pdfCon');
     var $fullscreen = $('#pdfFullscreen');
     var $winH = $(window).height();
-    var randomId = generateMixed(4);
+    var curId = new Date().getTime();
     $pdfBox.show().siblings().hide();
     $pdfCon.find('canvas').remove();
-    $pdfCon.append('<canvas id="pdfCanvas_' + randomId + '"></canvas>');
+    $pdfCon.append('<canvas id="pdfCanvas_' + curId + '"></canvas>');
 
     var pdfUrl = '/data/' + document.title;
     var pdfDoc = null,
@@ -25,7 +25,7 @@ $(function () {
 
     PDFJS.disableWorker = true; //fix firefox load worker bug
 
-    $(document).unbind("keydown").bind("keydown", function (event) {
+    $(document).unbind('keydown').bind('keydown', function (event) {
         //判断当event.keyCode 为37时（即左方面键）
         //判断当event.keyCode 为39时（即右方面键）
         if (event.keyCode == 37) {
@@ -47,13 +47,13 @@ $(function () {
     // 全屏
     window.onload = function() {
         var hookApis = [
-            [ "requestFullscreen", "exitFullscreen", "fullscreenchange", "fullscreen", "fullscreenElement" ],
-            [ "webkitRequestFullScreen", "webkitCancelFullScreen", "webkitfullscreenchange", "webkitIsFullScreen", "webkitCurrentFullScreenElement" ],
-            [ "mozRequestFullScreen", "mozCancelFullScreen", "mozfullscreenchange", "mozFullScreen", "mozFullScreenElement" ]
+            [ 'requestFullscreen', 'exitFullscreen', 'fullscreenchange', 'fullscreen', 'fullscreenElement' ],
+            [ 'webkitRequestFullScreen', 'webkitCancelFullScreen', 'webkitfullscreenchange', 'webkitIsFullScreen', 'webkitCurrentFullScreenElement' ],
+            [ 'mozRequestFullScreen', 'mozCancelFullScreen', 'mozfullscreenchange', 'mozFullScreen', 'mozFullScreenElement' ],
+            [ 'msRequestFullScreen', 'msCancelFullScreen', 'msfullscreenchange', 'msFullScreen', 'msFullscreenElement' ]
         ];
         return screenfull = {
             init: function () {
-                console.log(document);
                 for (var index = 0; index < hookApis.length; index++) {
                     hookApi = hookApis[index];
                     if (hookApi[0] in document.documentElement && hookApi[1] in document) {
@@ -61,17 +61,21 @@ $(function () {
                         break;
                     }
                 }
-                console.log(this.api);
                 return this.api ? this : undefined;
             },
+            isModeOn: function () {
+                var isOn = window.fullScreen || document.fullscreen || document.webkitFullScreen || document.webkitIsFullScreen || document.mozFullScreen || document.msFullScreen;
+                console.log('isFullScreen: ' + isOn);
+                return isOn;
+            },
             request: function () {
-                document.documentElement && (document[this.api[3]] || document.documentElement[this.api[0]]());
+                document.documentElement && (this.isModeOn() || document.documentElement[this.api[0]]());
             },
             exit: function () {
                 document[this.api[1]]();
             },
             toggle: function () {
-                document[this.api[3]] ? this.exit() : this.request();
+                this.isModeOn() ? this.exit() : this.request();
             },
             onchange: function () {}
         }.init();
@@ -97,9 +101,8 @@ $(function () {
 
     // 退出全屏
     window.onresize = function () {
-        var isFull = checkFull();
-        console.log('isFull: ' + isFull);
-        if (isFull) {
+        if (!screenfull) return;
+        if (screenfull.isModeOn()) {
             if ($fullscreen.hasClass('icon-quanping')) {
                 $fullscreen.removeClass('icon-quanping').addClass('icon-fullscreen-exit').parent().attr('data-tooltips', '退出全屏');
             }
@@ -110,11 +113,6 @@ $(function () {
         }
     };
 
-    // 判断是否为全屏
-    function checkFull() {
-        return window.fullScreen || document.fullscreen || document.webkitIsFullScreen || document.mozFullScreen;
-    }
-
     /**
      * Get page info from document, resize canvas accordingly, and render page.
      * @param num Page number.
@@ -123,7 +121,7 @@ $(function () {
         pageRendering = true;
         // Using promise to fetch the page
         pdfDoc.getPage(num).then(function (page) {
-            var canvas = document.getElementById('pdfCanvas_' + randomId);
+            var canvas = document.getElementById('pdfCanvas_' + curId);
             var ctx = canvas.getContext('2d');
 
             //按宽高比例缩放
@@ -209,14 +207,3 @@ $(function () {
         renderPage(pageNum);
     });
 });
-
-//生成随机数
-function generateMixed(n) {
-    var res = "";
-    var chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-    for (var i = 0; i < n; i++) {
-        var id = Math.ceil(Math.random() * 35);
-        res += chars[id];
-    }
-    return res;
-}
