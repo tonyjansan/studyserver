@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="../stylesheets/tooltips.min.css"/>
+    <link rel="stylesheet" href="../stylesheets/style.play.css"/>
+    <link rel="stylesheet" href="../stylesheets/iconfont.css"/>
+</head>
+<body>
+    <div id="pdfWrapper">
+        <div id="pdfBox">
+            <div id="pdfCon">
+                <!--loader-->
+                <div class="spinner dn">
+                    <div class="spinner-container container1">
+                        <div class="circle1"></div>
+                        <div class="circle2"></div>
+                        <div class="circle3"></div>
+                        <div class="circle4"></div>
+                    </div>
+                    <div class="spinner-container container2">
+                        <div class="circle1"></div>
+                        <div class="circle2"></div>
+                        <div class="circle3"></div>
+                        <div class="circle4"></div>
+                    </div>
+                    <div class="spinner-container container3">
+                        <div class="circle1"></div>
+                        <div class="circle2"></div>
+                        <div class="circle3"></div>
+                        <div class="circle4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!--control bar-->
+            <div id="pdfControlBar">
+                <span class="tooltips-right livePlay" data-tooltips="开始直播"><i class="iconfont icon-bofang1" id="livePlay"></i></span>
+                <span class="tooltips-left" data-tooltips="上一页"><i class="iconfont icon-shangyishou" id="pdfPrev"></i></span>
+                <span class="pdfPages"> <span id="crtPdfPage">-</span> / <span id="totalPdfPage">-</span> </span>
+                <span class="tooltips-right" data-tooltips="下一页"><i class="iconfont icon-shangyishou-copy" id="pdfNext"></i></span>
+                <span class="tooltips-left pdfFullscreen" data-tooltips="全屏浏览"><i class="iconfont icon-fullscreen-exit" id="pdfFullscreen"></i></span>
+            </div>
+        </div>
+    </div>
+
+    <!--js-->
+    <script src="../javascripts/jquery.min.js"></script>
+    <script src="../javascripts/pdf.js"></script>
+    <script src="../javascripts/play.web.js"></script>
+</body>
+</html>

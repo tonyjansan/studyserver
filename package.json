@@ -1,0 +1,22 @@
+{
+  "name": "studyserver",
+  "version": "1.0.0",
+  "description": "the study server",
+  "main": "app.js",
+  "scripts": {
+    "dev": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.16.4",
+    "cookie-parser": "^1.4.4",
+    "ejs": "^2.6.1",
+    "http-errors": "^1.7.2",
+    "morgan": "^1.9.1",
+    "multer": "^1.4.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0"
+  },
+  "author": "tony_jansan@aliyun.com",
+  "license": "ISC"
+}

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <form action="/upload/single.play" method="post" enctype="multipart/form-data">
+      <h2>ppt上传</h2>
+      <input type="file" name="ppt">
+      <input type="submit" value="提交">
+    </form>
+  </body>
+</html>
