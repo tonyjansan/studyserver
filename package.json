@@ -18,5 +18,6 @@
     "eslint": "^5.16.0"
   },
   "author": "tony_jansan@aliyun.com",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": "github:tonyjansan/studyserver"
 }
